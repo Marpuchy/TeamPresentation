@@ -1,6 +1,6 @@
 # Pactum X Team
 
-Presentacion web estilo seleccion de personajes para mostrar al equipo de desarrollo de Pactum X como un roster jugable. La interfaz esta pensada como una pantalla premium de seleccion, con atmosfera oscura, acentos magicos, paneles cinematograficos y transiciones suaves.
+Presentacion web estilo seleccion de personajes para mostrar al equipo de desarrollo de Pactum X como una alineacion jugable. La interfaz esta planteada como una pantalla premium de selector, con alineacion superior visible, retratos estilizados, paneles de detalle y estadisticas con lectura de videojuego.
 
 ## Stack
 
@@ -14,9 +14,10 @@ Presentacion web estilo seleccion de personajes para mostrar al equipo de desarr
 ## Lo que incluye
 
 - Hero inmersivo a pantalla completa
-- Selector de 4 miembros con cambio de personaje animado
-- Panel central con retrato conceptual, rol, clase y aporte distintivo
+- Selector horizontal de 4 miembros con estados hover y seleccion
+- Panel principal con retrato oscuro estilizado, rol, clase y aporte distintivo
 - Radar premium y barras animadas para estadisticas personalizadas
+- Paneles inferiores con descripcion, contacto, focos de trabajo y herramientas
 - Modelo de datos limpio y editable en `src/data/team.ts`
 - Estructura preparada para despliegue directo en Vercel
 
@@ -55,8 +56,7 @@ src/
     page.tsx
   components/
     pactum/
-      background-effects.tsx
-      portrait-placeholder.tsx
+      character-portrait.tsx
       stats-radar.tsx
       team-showcase.tsx
   data/
@@ -74,9 +74,10 @@ Edita `src/data/team.ts` para cambiar:
 - clases
 - descripciones
 - habilidad distintiva
+- enlaces de contacto
 - estadisticas
 - colores de acento
-- placeholder de retrato
+- variante del retrato
 
 ## Despliegue en Vercel
 

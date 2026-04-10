@@ -3,6 +3,8 @@ export type TeamStat = {
   value: number;
 };
 
+export type TeamAvatarVariant = "crown" | "forge" | "blade" | "veil";
+
 export type TeamTheme = {
   accent: string;
   accentSoft: string;
@@ -11,10 +13,10 @@ export type TeamTheme = {
   glow: string;
 };
 
-export type TeamPortraitPlaceholder = {
-  imageSrc: string | null;
-  monogram: string;
-  designation: string;
+export type TeamAvatar = {
+  variant: TeamAvatarVariant;
+  codename: string;
+  sigil: string;
 };
 
 export type TeamMember = {
@@ -22,15 +24,18 @@ export type TeamMember = {
   name: string;
   role: string;
   title: string;
+  subtitle: string;
   description: string;
   signatureAbility: string;
-  abilityDetail: string;
+  signatureDetail: string;
   rank: string;
-  specialization: string;
   lore: string;
-  quote: string;
+  focusAreas: string[];
+  tools: string[];
+  github: string;
+  email: string;
   accentColor: string;
   theme: TeamTheme;
-  portraitPlaceholder: TeamPortraitPlaceholder;
+  avatar: TeamAvatar;
   stats: TeamStat[];
 };

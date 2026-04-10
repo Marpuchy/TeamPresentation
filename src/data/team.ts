@@ -20,7 +20,7 @@ export const teamMembers: TeamMember[] = [
       "Sistemas nucleares",
       "Construccion de mundo",
     ],
-    tools: ["Direccion creativa", "Balancing", "Documentacion de sistemas"],
+    tools: ["Direccion creativa", "Ajuste de balance", "Documentacion de sistemas"],
     github: "Marpuchy",
     email: "marc@pactumx.dev",
     accentColor: "#8b5cf6",
@@ -103,7 +103,7 @@ export const teamMembers: TeamMember[] = [
       "Cuando una mecanica funciona pero no emociona, Andreu la empuja hasta que el encuentro deja huella y obliga a tomar decisiones reales.",
     focusAreas: [
       "Diseno de combate",
-      "Balance de encounters",
+      "Balance de encuentros",
       "Respuesta tactica",
     ],
     tools: ["Bucles de combate", "Pruebas de arena", "Balance iterativo"],
@@ -135,12 +135,12 @@ export const teamMembers: TeamMember[] = [
     name: "Ismael",
     role: "Interfaz, experiencia y pulido",
     title: "Custodio del Umbral",
-    subtitle: "Da forma a la lectura visual y convierte la sensacion final en algo premium.",
+    subtitle: "Da forma a la lectura visual y convierte la sensacion final en una presentacion de alta gama.",
     description:
-      "Asegura que la interfaz tenga presencia, que el feedback se lea al instante y que cada transicion eleve la sensacion de calidad del juego.",
+      "Asegura que la interfaz tenga presencia, que la respuesta visual se lea al instante y que cada transicion eleve la sensacion de calidad del juego.",
     signatureAbility: "Veladura de Impacto",
     signatureDetail:
-      "Refina interfaz, timing visual y feedback hasta convertir la presentacion del proyecto en una experiencia mas solida, clara y deseable.",
+      "Refina interfaz, timing visual y respuesta audiovisual hasta convertir la presentacion del proyecto en una experiencia mas solida, clara y deseable.",
     rank: "Guardian del pulso",
     lore:
       "En su mesa se decide si el juego solo funciona o si ademas deja una impresion nitida en cada pantalla, golpe y transicion.",
@@ -149,7 +149,7 @@ export const teamMembers: TeamMember[] = [
       "Flujos de usuario",
       "Pulido audiovisual",
     ],
-    tools: ["Sistemas de interfaz", "Feedback", "Pulido de movimiento"],
+    tools: ["Sistemas de interfaz", "Retorno visual", "Pulido de movimiento"],
     github: "ismael-pactumx",
     email: "ismael@pactumx.dev",
     accentColor: "#f59e0b",
@@ -168,8 +168,8 @@ export const teamMembers: TeamMember[] = [
     stats: [
       { label: "Vision de interfaz", value: 92 },
       { label: "Pulido final", value: 94 },
-      { label: "Feedback visual", value: 91 },
-      { label: "Claridad de feedback", value: 91 },
+      { label: "Respuesta visual", value: 91 },
+      { label: "Claridad de lectura", value: 91 },
       { label: "Soporte de equipo", value: 88 },
     ],
   },

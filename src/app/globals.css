@@ -31,6 +31,10 @@ body {
   font-family: var(--font-interface), sans-serif;
 }
 
+.font-display {
+  font-family: var(--font-display), serif;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -75,7 +79,7 @@ button {
 
 .section-eyebrow {
   font-size: 0.72rem;
-  letter-spacing: 0.38em;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
   color: rgba(226, 232, 240, 0.56);
 }
@@ -113,6 +117,7 @@ button {
 
 .pactum-panel {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:

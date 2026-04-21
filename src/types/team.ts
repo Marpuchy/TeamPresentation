@@ -1,8 +1,3 @@
-export type TeamStat = {
-  label: string;
-  value: number;
-};
-
 export type TeamAvatarVariant = "crown" | "forge" | "blade" | "veil";
 
 export type TeamTheme = {
@@ -10,13 +5,13 @@ export type TeamTheme = {
   accentSoft: string;
   secondary: string;
   secondarySoft: string;
-  glow: string;
+  surface: string;
+  surfaceAlt: string;
+  line: string;
 };
 
 export type TeamAvatar = {
   variant: TeamAvatarVariant;
-  codename: string;
-  sigil: string;
 };
 
 export type TeamMember = {
@@ -24,18 +19,11 @@ export type TeamMember = {
   name: string;
   role: string;
   title: string;
-  subtitle: string;
   description: string;
   signatureAbility: string;
   signatureDetail: string;
-  rank: string;
-  lore: string;
-  focusAreas: string[];
-  tools: string[];
   github: string;
   email: string;
-  accentColor: string;
   theme: TeamTheme;
   avatar: TeamAvatar;
-  stats: TeamStat[];
 };

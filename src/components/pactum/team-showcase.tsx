@@ -1,94 +1,107 @@
 "use client";
 
-import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
+import type {
+  CSSProperties,
+  KeyboardEvent,
+  PointerEvent as ReactPointerEvent,
+  ReactNode,
+} from "react";
 import { startTransition, useRef, useState } from "react";
-import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   Anvil,
   Code2,
   Crown,
   Eye,
   Mail,
-  Shield,
-  Sparkles,
   Sword,
   type LucideIcon,
 } from "lucide-react";
 
-import type { TeamMember, TeamStat } from "@/types/team";
-
-import { CharacterPortrait } from "./character-portrait";
-import { StatsRadar } from "./stats-radar";
+import type { TeamMember } from "@/types/team";
 
 type TeamShowcaseProps = {
   members: TeamMember[];
 };
 
-const transition = {
-  duration: 0.55,
+type EdgeAlign = "left" | "right";
+
+const panelTransition = {
+  duration: 0.3,
   ease: [0.22, 1, 0.36, 1] as const,
 };
 
-const variantIcons: Record<TeamMember["avatar"]["variant"], LucideIcon> = {
+const revealTransition = {
+  duration: 0.24,
+  ease: [0.22, 1, 0.36, 1] as const,
+};
+
+const iconMap: Record<TeamMember["avatar"]["variant"], LucideIcon> = {
   crown: Crown,
   forge: Anvil,
   blade: Sword,
   veil: Eye,
 };
 
-const particles = [
-  { left: "8%", top: "16%", size: 5, delay: 0.2 },
-  { left: "22%", top: "10%", size: 7, delay: 1.1 },
-  { left: "48%", top: "14%", size: 5, delay: 0.7 },
-  { left: "74%", top: "11%", size: 7, delay: 1.6 },
-  { left: "92%", top: "22%", size: 6, delay: 0.9 },
-];
-
 export function TeamShowcase({ members }: TeamShowcaseProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const selectorRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const shouldReduceMotion = useReducedMotion();
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const panelRefs = useRef<Array<HTMLElement | null>>([]);
+  const shouldReduceMotion = useReducedMotion() ?? false;
 
-  const selectedMember = members[selectedIndex];
-  const selectedIcon = variantIcons[selectedMember.avatar.variant];
-  const leadStat = getLeadStat(selectedMember.stats);
-  const averageStat = Math.round(
-    selectedMember.stats.reduce((sum, stat) => sum + stat.value, 0) /
-      selectedMember.stats.length,
-  );
+  const activeIndex = hoveredIndex ?? selectedIndex;
 
-  const themeStyle = {
-    "--accent": selectedMember.theme.accent,
-    "--accent-soft": selectedMember.theme.accentSoft,
-    "--secondary": selectedMember.theme.secondary,
-    "--secondary-soft": selectedMember.theme.secondarySoft,
-    "--glow": selectedMember.theme.glow,
-  } as CSSProperties;
-
-  const selectIndex = (nextIndex: number, focusButton = false) => {
-    const safeIndex = (nextIndex + members.length) % members.length;
+  const selectIndex = (nextIndex: number, focusPanel = false) => {
+    if (!members[nextIndex]) {
+      return;
+    }
 
     startTransition(() => {
-      setSelectedIndex(safeIndex);
+      setSelectedIndex(nextIndex);
     });
 
-    if (focusButton) {
-      selectorRefs.current[safeIndex]?.focus();
+    if (focusPanel) {
+      panelRefs.current[nextIndex]?.focus();
     }
   };
 
-  const handleSelectorKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+  const handlePointerEnter = (
+    event: ReactPointerEvent<HTMLElement>,
+    index: number,
+  ) => {
+    if (event.pointerType === "mouse") {
+      setHoveredIndex(index);
+    }
+  };
+
+  const handlePointerLeave = (
+    event: ReactPointerEvent<HTMLElement>,
+    index: number,
+  ) => {
+    if (event.pointerType === "mouse") {
+      setHoveredIndex((current) => (current === index ? null : current));
+    }
+  };
+
+  const handlePanelKeyDown = (
+    event: KeyboardEvent<HTMLElement>,
+    index: number,
+  ) => {
     switch (event.key) {
-      case "ArrowRight":
-      case "ArrowDown":
+      case "Enter":
+      case " ":
         event.preventDefault();
-        selectIndex(selectedIndex + 1, true);
+        selectIndex(index);
         break;
-      case "ArrowLeft":
-      case "ArrowUp":
+      case "ArrowDown":
+      case "ArrowRight":
         event.preventDefault();
-        selectIndex(selectedIndex - 1, true);
+        selectIndex((index + 1) % members.length, true);
+        break;
+      case "ArrowUp":
+      case "ArrowLeft":
+        event.preventDefault();
+        selectIndex((index - 1 + members.length) % members.length, true);
         break;
       case "Home":
         event.preventDefault();
@@ -104,588 +117,348 @@ export function TeamShowcase({ members }: TeamShowcaseProps) {
   };
 
   return (
-    <section
-      style={themeStyle}
-      className="relative min-h-screen overflow-hidden text-slate-100"
-    >
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.025),transparent_14%),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100%_100%,128px_128px,128px_128px] opacity-35" />
-        <div
-          className="absolute left-[-10%] top-[-6%] h-[28rem] w-[28rem] rounded-full blur-3xl"
-          style={{ background: selectedMember.theme.glow }}
-        />
-        <div
-          className="absolute right-[-8%] top-[6%] h-[24rem] w-[24rem] rounded-full blur-3xl"
-          style={{ background: selectedMember.theme.secondarySoft }}
-        />
-        <div
-          className="absolute bottom-[-18%] left-[42%] h-[22rem] w-[22rem] rounded-full blur-3xl"
-          style={{ background: selectedMember.theme.accentSoft }}
-        />
+    <main className="relative min-h-[100svh] overflow-hidden bg-[#050705] text-slate-100">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.025),transparent_14%,transparent_86%,rgba(255,255,255,0.02))]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(120,103,126,0.1),transparent_20%),radial-gradient(circle_at_top_right,rgba(74,101,92,0.08),transparent_18%)]"
+      />
+      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-px bg-white/10" />
+      <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-px bg-white/10" />
 
-        {particles.map((particle, index) => (
-          <motion.span
-            key={`${particle.left}-${particle.top}`}
-            className="absolute rounded-full"
-            style={{
-              left: particle.left,
-              top: particle.top,
-              width: particle.size,
-              height: particle.size,
-              background:
-                index % 2 === 0
-                  ? selectedMember.theme.accent
-                  : selectedMember.theme.secondary,
-              boxShadow: `0 0 18px ${
-                index % 2 === 0
-                  ? selectedMember.theme.glow
-                  : selectedMember.theme.secondarySoft
-              }`,
-            }}
-            animate={
-              shouldReduceMotion
-                ? { opacity: [0.16, 0.36, 0.16] }
-                : {
-                    opacity: [0.12, 0.54, 0.14],
-                    y: [0, -14, 0],
-                    scale: [0.94, 1.14, 0.96],
-                  }
-            }
-            transition={{
-              duration: 4.8 + index * 0.4,
-              delay: particle.delay,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-[1560px] flex-col px-4 pb-8 pt-4 sm:px-6 sm:pt-5 lg:px-8 lg:pb-10">
-        <motion.header
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={transition}
-          className="mx-auto max-w-4xl text-center"
+      <div className="relative z-10">
+        <div
+          role="list"
+          aria-label="Roster vertical del equipo Pactum X"
+          className="flex flex-col gap-1"
         >
-          <h1 className="font-display text-[clamp(2.45rem,5.2vw,4.15rem)] leading-[0.94] tracking-[0.1em] text-white">
-            Pactum X Team
-          </h1>
-          <p className="mt-2 text-[0.68rem] uppercase tracking-[0.36em] text-slate-300/58 sm:text-[0.76rem]">
-            Selecciona un miembro del equipo
-          </p>
-        </motion.header>
+          {members.map((member, index) => {
+            const isLeft = index % 2 === 0;
+            const align: EdgeAlign = isLeft ? "left" : "right";
+            const isActive = activeIndex === index;
+            const isSelected = selectedIndex === index;
+            const Icon = iconMap[member.avatar.variant];
+            const sectionCode = `${index + 1}`.padStart(2, "0");
 
-        <motion.section
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...transition, delay: 0.06 }}
-          className="mt-4"
-        >
-          <div className="mb-4 flex items-center justify-between gap-4">
-            <div>
-              <p className="section-eyebrow">Selector del equipo</p>
-            </div>
+            return (
+              <motion.article
+                key={member.id}
+                layout
+                ref={(element) => {
+                  panelRefs.current[index] = element;
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Abrir perfil de ${member.name}`}
+                aria-expanded={isActive}
+                aria-pressed={isSelected}
+                onClick={() => selectIndex(index)}
+                onKeyDown={(event) => handlePanelKeyDown(event, index)}
+                onPointerEnter={(event) => handlePointerEnter(event, index)}
+                onPointerLeave={(event) => handlePointerLeave(event, index)}
+                transition={shouldReduceMotion ? { duration: 0 } : panelTransition}
+                className={`relative min-h-0 cursor-pointer overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-white/30 ${
+                  isActive
+                    ? "min-h-[18rem] sm:min-h-[20rem]"
+                    : "min-h-[12.5rem] sm:min-h-[13rem]"
+                }`}
+                style={getPanelStyle(member, isLeft, isActive, isSelected)}
+              >
+                <div
+                  aria-hidden
+                  className={`absolute inset-y-0 ${isLeft ? "left-0" : "right-0"} w-[18px] sm:w-[22px] lg:w-[26px]`}
+                  style={{
+                    background: `linear-gradient(180deg, ${member.theme.accent} 0%, ${member.theme.secondary} 100%)`,
+                    opacity: isActive ? 0.82 : isSelected ? 0.72 : 0.54,
+                  }}
+                />
+                <div
+                  aria-hidden
+                  className={`absolute inset-y-0 ${isLeft ? "left-[18px] sm:left-[22px] lg:left-[26px]" : "right-[18px] sm:right-[22px] lg:right-[26px]"} w-[42%]`}
+                  style={{
+                    background: isLeft
+                      ? `linear-gradient(90deg, ${member.theme.accentSoft} 0%, transparent 78%)`
+                      : `linear-gradient(270deg, ${member.theme.accentSoft} 0%, transparent 78%)`,
+                    opacity: isActive ? 1 : 0.72,
+                  }}
+                />
+                <div
+                  aria-hidden
+                  className={`absolute top-0 ${isLeft ? "left-0" : "right-0"} h-px w-[13rem] sm:w-[18rem] lg:w-[24rem]`}
+                  style={{
+                    background: isLeft
+                      ? `linear-gradient(90deg, ${member.theme.secondary} 0%, transparent 100%)`
+                      : `linear-gradient(270deg, ${member.theme.secondary} 0%, transparent 100%)`,
+                  }}
+                />
+                <div
+                  aria-hidden
+                  className={`absolute bottom-0 ${isLeft ? "right-0" : "left-0"} h-px w-[10rem] sm:w-[14rem] lg:w-[20rem]`}
+                  style={{
+                    background: isLeft
+                      ? `linear-gradient(270deg, ${member.theme.accent} 0%, transparent 100%)`
+                      : `linear-gradient(90deg, ${member.theme.accent} 0%, transparent 100%)`,
+                    opacity: 0.68,
+                  }}
+                />
 
-            <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[0.68rem] uppercase tracking-[0.3em] text-white/56">
-              {String(members.length).padStart(2, "0")} miembros
-            </div>
-          </div>
-
-          <div
-            role="radiogroup"
-            aria-label="Seleccion de personajes del equipo Pactum X"
-            onKeyDown={handleSelectorKeyDown}
-            className="roster-scroll flex gap-3 overflow-x-auto overflow-y-visible px-2 py-4 sm:px-3 lg:gap-4"
-          >
-            <LayoutGroup>
-              {members.map((member, index) => {
-                const isSelected = selectedIndex === index;
-                const isHovered = hoveredId === member.id;
-
-                return (
-                  <motion.button
-                    key={member.id}
-                    ref={(element) => {
-                      selectorRefs.current[index] = element;
-                    }}
-                    layout
-                    type="button"
-                    role="radio"
-                    aria-checked={isSelected}
-                    onMouseEnter={() => setHoveredId(member.id)}
-                    onMouseLeave={() =>
-                      setHoveredId((current) => (current === member.id ? null : current))
-                    }
-                    onClick={() => selectIndex(index)}
-                    transition={transition}
-                    className={`relative shrink-0 overflow-visible focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 ${
-                      isSelected
-                        ? "basis-[23rem] sm:basis-[30rem] lg:basis-[38rem] xl:basis-[42rem]"
-                        : isHovered
-                          ? "basis-[8.75rem] sm:basis-[9.5rem] lg:basis-[10.25rem]"
-                          : "basis-[6.75rem] sm:basis-[7.4rem] lg:basis-[8rem]"
+                <div
+                  className={`relative flex py-3 sm:py-4 lg:py-5 ${
+                    isLeft
+                      ? "justify-start pr-3 sm:pr-4 lg:pr-6"
+                      : "justify-end pl-3 sm:pl-4 lg:pl-6"
+                  }`}
+                >
+                  <div
+                    className={`flex w-full min-w-0 flex-col px-4 py-4 sm:w-[90%] sm:px-6 sm:py-5 lg:w-[72%] lg:max-w-[76rem] ${
+                      isLeft ? "items-start text-left" : "items-end text-right"
                     }`}
                   >
-                    {isSelected ? (
-                      <ExpandedSelectorCard member={member} />
-                    ) : (
-                      <CompactSelectorCard member={member} hovered={isHovered} />
-                    )}
-                  </motion.button>
-                );
-              })}
-            </LayoutGroup>
-          </div>
-        </motion.section>
+                    <div
+                      className={`flex w-full min-w-0 items-start gap-4 ${
+                        isLeft ? "flex-row" : "flex-row-reverse"
+                      }`}
+                    >
+                      <SectionMarker
+                        code={sectionCode}
+                        accent={member.theme.accent}
+                        secondary={member.theme.secondary}
+                        surface={member.theme.surfaceAlt}
+                        align={align}
+                      />
 
-        <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_420px] xl:items-start">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.section
-              key={`${selectedMember.id}-portrait`}
-              initial={{ opacity: 0, x: -18 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 14 }}
-              transition={transition}
-              className="pactum-panel rounded-[34px] p-3 sm:p-4"
-              style={{ boxShadow: `0 18px 80px rgba(0,0,0,0.5), 0 0 0 1px ${selectedMember.theme.accentSoft}` }}
-            >
-              <PanelAccent member={selectedMember} />
+                      <div className="flex min-w-0 flex-1 flex-col">
+                        <div
+                          className={`flex min-w-0 items-center gap-3 ${
+                            isLeft ? "flex-row" : "flex-row-reverse"
+                          }`}
+                        >
+                          <PanelBadge
+                            label={member.title}
+                            accent={member.theme.accent}
+                            fill={member.theme.accentSoft}
+                            align={align}
+                          />
 
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-2">
-                <div className="flex flex-wrap gap-2">
-                  <PanelChip
-                    label={selectedMember.title}
-                    accent={selectedMember.theme.accent}
-                    fill={selectedMember.theme.accentSoft}
-                  />
-                  <PanelChip
-                    label={selectedMember.role}
-                    accent={selectedMember.theme.secondary}
-                    fill={selectedMember.theme.secondarySoft}
-                  />
-                </div>
+                          <div
+                            aria-hidden
+                            className="h-px flex-1"
+                            style={{
+                              background: isLeft
+                                ? `linear-gradient(90deg, ${member.theme.line} 0%, transparent 100%)`
+                                : `linear-gradient(270deg, ${member.theme.line} 0%, transparent 100%)`,
+                            }}
+                          />
 
-                <IconBadge member={selectedMember} icon={selectedIcon} />
-              </div>
+                          <div
+                            className="flex h-10 w-10 shrink-0 items-center justify-center border border-white/10 bg-transparent"
+                            style={getIconFrameStyle(member, align)}
+                          >
+                            <Icon className="h-4 w-4" />
+                          </div>
+                        </div>
 
-              <div className="min-h-[560px] rounded-[30px] border border-white/10 bg-black/20 p-2">
-                <CharacterPortrait
-                  member={selectedMember}
-                  mode="featured"
-                  active
-                />
-              </div>
+                        <div className="mt-4 w-full min-w-0">
+                          <p className="font-display text-[clamp(1.45rem,3.8vw,3rem)] leading-[0.92] tracking-[0.07em] text-white">
+                            {member.name}
+                          </p>
 
-              <div className="mt-4 grid gap-3 px-2 sm:grid-cols-3">
-                <QuickInfoCard
-                  label="Clase"
-                  value={selectedMember.title}
-                  accent={selectedMember.theme.accent}
-                />
-                <QuickInfoCard
-                  label="Rango"
-                  value={selectedMember.rank}
-                  accent={selectedMember.theme.secondary}
-                />
-                <QuickInfoCard
-                  label="Dominio"
-                  value={leadStat.label}
-                  accent={selectedMember.theme.accent}
-                />
-              </div>
-            </motion.section>
-          </AnimatePresence>
+                          <p
+                            className="mt-2 text-[0.64rem] uppercase tracking-[0.22em]"
+                            style={{ color: member.theme.secondary }}
+                          >
+                            {member.role}
+                          </p>
 
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.aside
-              key={`${selectedMember.id}-stats`}
-              initial={{ opacity: 0, x: 18 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -14 }}
-              transition={transition}
-              className="pactum-panel rounded-[34px] p-5 sm:p-6"
-            >
-              <PanelAccent member={selectedMember} />
+                          <p
+                            className="mt-3 text-[0.8rem] font-medium leading-6 sm:text-[0.86rem]"
+                            style={{ color: member.theme.accent }}
+                          >
+                            {member.title}
+                          </p>
 
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="section-eyebrow">Atributos</p>
-                  <h2 className="font-display mt-3 text-[2.55rem] tracking-[0.08em] text-white">
-                    Estadisticas
-                  </h2>
-                </div>
+                          <p
+                            className={`mt-3 max-w-[68ch] text-[0.78rem] leading-6 text-slate-300 sm:text-[0.84rem] ${
+                              isActive ? "" : "line-clamp-2"
+                            }`}
+                          >
+                            {member.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
 
-                <IconBadge member={selectedMember} icon={Shield} />
-              </div>
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                <StatSummary
-                  label="Media"
-                  value={String(averageStat)}
-                  accent={selectedMember.theme.accent}
-                />
-                <StatSummary
-                  label="Pico"
-                  value={leadStat.value.toString()}
-                  accent={selectedMember.theme.secondary}
-                />
-                <StatSummary
-                  label="Nodos"
-                  value={String(selectedMember.stats.length).padStart(2, "0")}
-                  accent={selectedMember.theme.accent}
-                />
-              </div>
-
-              <div className="mt-5">
-                <StatsRadar member={selectedMember} />
-              </div>
-
-              <div className="mt-6 space-y-4">
-                {selectedMember.stats.map((stat, index) => (
-                  <StatBar
-                    key={`${selectedMember.id}-${stat.label}`}
-                    stat={stat}
-                    index={index}
-                    member={selectedMember}
-                  />
-                ))}
-              </div>
-            </motion.aside>
-          </AnimatePresence>
-        </div>
-
-        <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.18fr)_360px] xl:items-start">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.section
-              key={`${selectedMember.id}-detail`}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={transition}
-              className="pactum-panel rounded-[34px] p-5 sm:p-6"
-            >
-              <PanelAccent member={selectedMember} />
-
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="section-eyebrow">Perfil</p>
-                  <h2 className="font-display mt-3 text-[3.15rem] tracking-[0.08em] text-white">
-                    {selectedMember.name}
-                  </h2>
-                  <p
-                    className="mt-2 text-sm uppercase tracking-[0.28em]"
-                    style={{ color: selectedMember.theme.secondary }}
-                  >
-                    {selectedMember.role}
-                  </p>
-                </div>
-
-                <IconBadge member={selectedMember} icon={selectedIcon} />
-              </div>
-
-              <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-                <div>
-                  <div
-                    className="rounded-[28px] border border-white/10 bg-white/[0.03] p-5"
-                    style={{
-                      boxShadow: `inset 0 0 0 1px ${selectedMember.theme.accentSoft}`,
-                      background: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)), radial-gradient(circle at top right, ${selectedMember.accentColor}18, transparent 48%)`,
-                    }}
-                  >
-                    <p className="text-sm uppercase tracking-[0.28em] text-slate-300/54">
-                      {selectedMember.title}
-                    </p>
-                    <p className="mt-3 text-lg leading-8 text-slate-300/82">
-                      {selectedMember.description}
-                    </p>
-                  </div>
-
-                  <div
-                    className="mt-6 rounded-[28px] border border-white/10 bg-white/[0.05] p-5"
-                    style={{
-                      boxShadow: `inset 0 0 0 1px ${selectedMember.theme.secondarySoft}`,
-                      background: `linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)), radial-gradient(circle at top right, ${selectedMember.theme.secondary}18, transparent 44%)`,
-                    }}
-                  >
-                    <p className="section-eyebrow">Contribucion distintiva</p>
-                    <h3 className="mt-3 text-2xl font-semibold text-white">
-                      {selectedMember.signatureAbility}
-                    </h3>
-                    <p className="mt-3 text-sm leading-7 text-slate-300/76">
-                      {selectedMember.signatureDetail}
-                    </p>
-                  </div>
-
-                  <div
-                    className="mt-6 rounded-[28px] border border-white/10 bg-white/[0.03] p-5"
-                    style={{
-                      boxShadow: `inset 0 0 0 1px ${selectedMember.theme.accentSoft}`,
-                      background: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)), radial-gradient(circle at bottom right, ${selectedMember.accentColor}16, transparent 52%)`,
-                    }}
-                  >
-                    <p className="section-eyebrow">Detalle de mundo</p>
-                    <p className="mt-3 text-sm leading-7 text-slate-300/74">
-                      {selectedMember.lore}
-                    </p>
+                    <motion.div
+                      initial={false}
+                      animate={
+                        shouldReduceMotion
+                          ? {
+                              height: isActive ? "auto" : 0,
+                              opacity: isActive ? 1 : 0,
+                              marginTop: isActive ? 20 : 0,
+                            }
+                          : {
+                              height: isActive ? "auto" : 0,
+                              opacity: isActive ? 1 : 0,
+                              marginTop: isActive ? 20 : 0,
+                            }
+                      }
+                      transition={shouldReduceMotion ? { duration: 0 } : revealTransition}
+                      className="w-full overflow-hidden"
+                    >
+                      <motion.div
+                        layout="position"
+                        initial={false}
+                        animate={
+                          shouldReduceMotion
+                            ? { y: 0 }
+                            : { y: isActive ? 0 : -6 }
+                        }
+                        transition={shouldReduceMotion ? { duration: 0 } : revealTransition}
+                        className="w-full border-t pt-5"
+                        style={{ borderColor: member.theme.line }}
+                      >
+                        <div
+                          className={`grid gap-3 lg:items-start ${
+                            isLeft
+                              ? "lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]"
+                              : "lg:grid-cols-[minmax(18rem,0.8fr)_minmax(0,1.2fr)]"
+                          }`}
+                        >
+                          {isLeft ? (
+                            <>
+                              <DetailCard
+                                label="Contribucion distintiva"
+                                title={member.signatureAbility}
+                                detail={member.signatureDetail}
+                                accent={member.theme.secondary}
+                                align={align}
+                              />
+                              <div className="space-y-3">
+                                <ProfileEssentialsCard member={member} align={align} />
+                                <div className="grid gap-2">
+                                  <ProfileLink
+                                    icon={<Code2 className="h-4 w-4" />}
+                                    label="GitHub"
+                                    value={member.github}
+                                    href={`https://github.com/${member.github}`}
+                                    accent={member.theme.accent}
+                                    align={align}
+                                  />
+                                  <ProfileLink
+                                    icon={<Mail className="h-4 w-4" />}
+                                    label="Correo"
+                                    value={member.email}
+                                    href={`mailto:${member.email}`}
+                                    accent={member.theme.secondary}
+                                    align={align}
+                                  />
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="space-y-3">
+                                <ProfileEssentialsCard member={member} align={align} />
+                                <div className="grid gap-2">
+                                  <ProfileLink
+                                    icon={<Code2 className="h-4 w-4" />}
+                                    label="GitHub"
+                                    value={member.github}
+                                    href={`https://github.com/${member.github}`}
+                                    accent={member.theme.accent}
+                                    align={align}
+                                  />
+                                  <ProfileLink
+                                    icon={<Mail className="h-4 w-4" />}
+                                    label="Correo"
+                                    value={member.email}
+                                    href={`mailto:${member.email}`}
+                                    accent={member.theme.secondary}
+                                    align={align}
+                                  />
+                                </div>
+                              </div>
+                              <DetailCard
+                                label="Contribucion distintiva"
+                                title={member.signatureAbility}
+                                detail={member.signatureDetail}
+                                accent={member.theme.secondary}
+                                align={align}
+                              />
+                            </>
+                          )}
+                        </div>
+                      </motion.div>
+                    </motion.div>
                   </div>
                 </div>
-
-                <div className="space-y-4">
-                  <DetailList
-                    title="Focos de trabajo"
-                    items={selectedMember.focusAreas}
-                    accent={selectedMember.theme.accent}
-                  />
-                  <DetailList
-                    title="Herramientas y enfoque"
-                    items={selectedMember.tools}
-                    accent={selectedMember.theme.secondary}
-                  />
-                </div>
-              </div>
-            </motion.section>
-          </AnimatePresence>
-
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.aside
-              key={`${selectedMember.id}-contact`}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={transition}
-              className="pactum-panel rounded-[34px] p-5 sm:p-6"
-            >
-              <PanelAccent member={selectedMember} />
-
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="section-eyebrow">Contacto</p>
-                  <h2 className="font-display mt-3 text-[2.55rem] tracking-[0.08em] text-white">
-                    Enlaces
-                  </h2>
-                </div>
-
-                <IconBadge member={selectedMember} icon={Sparkles} />
-              </div>
-
-              <div className="mt-5 space-y-3">
-                <ContactButton
-                  icon={<Code2 className="h-5 w-5" />}
-                  label="GitHub"
-                  value={selectedMember.github}
-                  href={`https://github.com/${selectedMember.github}`}
-                  accent={selectedMember.theme.accent}
-                />
-                <ContactButton
-                  icon={<Mail className="h-5 w-5" />}
-                  label="Correo"
-                  value={selectedMember.email}
-                  href={`mailto:${selectedMember.email}`}
-                  accent={selectedMember.theme.secondary}
-                />
-              </div>
-
-              <div
-                className="mt-5 rounded-[28px] border border-white/10 bg-white/[0.04] p-5"
-                style={{
-                  background: `linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)), radial-gradient(circle at top right, ${selectedMember.theme.secondary}16, transparent 52%)`,
-                  boxShadow: `inset 0 0 0 1px ${selectedMember.theme.secondarySoft}`,
-                }}
-              >
-                <p className="section-eyebrow">Lectura rapida</p>
-                <p className="mt-3 text-sm leading-7 text-slate-300/74">
-                  Perfil dominante en <span className="text-white">{leadStat.label}</span>,
-                  con una media de <span className="text-white">{averageStat}</span> y una
-                  identidad visual alineada con su especialidad.
-                </p>
-              </div>
-            </motion.aside>
-          </AnimatePresence>
+              </motion.article>
+            );
+          })}
         </div>
       </div>
-    </section>
+    </main>
   );
 }
 
-function ExpandedSelectorCard({ member }: { member: TeamMember }) {
-  const leadStat = getLeadStat(member.stats);
-  const Icon = variantIcons[member.avatar.variant];
-
-  return (
-    <div className="group relative overflow-visible px-1 py-1">
-      <div
-        className="absolute -inset-3 rounded-[38px] opacity-90 blur-2xl"
-        style={{ background: member.theme.glow }}
-      />
-
-      <div
-        className="relative h-[252px] overflow-hidden rounded-[32px] border"
-        style={{
-          borderColor: member.theme.accentSoft,
-          boxShadow: `0 0 0 1px ${member.theme.accentSoft}, inset 0 0 0 1px rgba(255,255,255,0.05)`,
-          background: `linear-gradient(135deg, ${member.theme.accentSoft} 0%, rgba(8,10,18,0.96) 28%, rgba(6,8,14,0.98) 100%)`,
-        }}
-      >
-        <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
-        <div className="grid h-full grid-cols-[11.5rem_minmax(0,1fr)] gap-3 p-2 sm:grid-cols-[12.4rem_minmax(0,1fr)] lg:grid-cols-[13.5rem_minmax(0,1fr)]">
-          <div className="overflow-hidden rounded-[26px] border border-white/10">
-            <CharacterPortrait member={member} mode="wide" active />
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ ...transition, delay: 0.05 }}
-            className="flex min-w-0 flex-col justify-between rounded-[26px] border border-white/8 bg-black/24 px-5 py-5"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="rounded-full border border-white/10 bg-white/6 px-3 py-1.5 text-[0.62rem] uppercase tracking-[0.32em] text-white/64">
-                {member.avatar.codename}
-              </div>
-              <div className="rounded-full border border-white/10 bg-black/30 p-2.5">
-                <Icon className="h-[18px] w-[18px]" style={{ color: member.theme.secondary }} />
-              </div>
-            </div>
-
-            <div className="min-w-0">
-              <p className="font-display text-[2.1rem] leading-[0.95] tracking-[0.08em] text-white">
-                {member.name}
-              </p>
-              <p
-                className="mt-2 text-xs uppercase tracking-[0.28em]"
-                style={{ color: member.theme.secondary }}
-              >
-                {member.title}
-              </p>
-              <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-300/78">
-                {member.subtitle}
-              </p>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <MiniStatCard
-                label="Rol"
-                value={member.role}
-                accent={member.theme.accent}
-              />
-              <MiniStatCard
-                label="Dominio"
-                value={leadStat.label}
-                accent={member.theme.secondary}
-              />
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CompactSelectorCard({
-  member,
-  hovered,
+function SectionMarker({
+  code,
+  accent,
+  secondary,
+  surface,
+  align,
 }: {
-  member: TeamMember;
-  hovered: boolean;
+  code: string;
+  accent: string;
+  secondary: string;
+  surface: string;
+  align: EdgeAlign;
 }) {
   return (
-    <motion.div
-      animate={{
-        y: hovered ? -4 : 0,
-      }}
-      transition={transition}
-      className="relative overflow-visible"
-    >
-      <div
-        className="absolute -inset-1.5 rounded-[34px] opacity-0 blur-2xl transition-opacity duration-300"
-        style={{
-          background: member.theme.glow,
-          opacity: hovered ? 0.8 : 0,
-        }}
-      />
-
-      <div className="relative h-[252px] overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(11,13,20,0.98),rgba(7,9,14,0.96))] shadow-[0_18px_46px_rgba(0,0,0,0.38)]">
-        <div className="absolute inset-0 rounded-[32px] border border-white/4" />
-
-        <motion.div
-          className="absolute inset-[7px] overflow-hidden rounded-[24px]"
-          animate={{
-            scale: hovered ? 1.04 : 0.985,
-            filter: hovered ? "brightness(1.06) contrast(1.06)" : "brightness(0.78)",
-          }}
-          transition={transition}
-        >
-          <CharacterPortrait member={member} mode="compact" active={hovered} />
-        </motion.div>
-
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black via-black/88 to-transparent" />
-
-        <div className="absolute inset-x-4 bottom-4">
-          <p className="text-[0.62rem] uppercase tracking-[0.32em] text-white/46">
-            {member.avatar.codename}
-          </p>
-          <p className="font-display mt-2 text-[1.65rem] leading-none tracking-[0.08em] text-white">
-            {member.name}
-          </p>
-          <motion.p
-            initial={false}
-            animate={{ opacity: hovered ? 1 : 0.58, y: hovered ? 0 : 2 }}
-            transition={transition}
-            className="mt-2 text-[0.68rem] uppercase tracking-[0.24em] text-slate-300/70"
-          >
-            {member.title}
-          </motion.p>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function PanelAccent({ member }: { member: TeamMember }) {
-  return (
     <div
-      aria-hidden
-      className="pointer-events-none absolute inset-x-6 top-0 h-px"
+      className="flex h-12 w-12 shrink-0 flex-col justify-between border border-white/10 px-2 py-1.5"
       style={{
-        background: `linear-gradient(90deg, transparent, ${member.theme.accent}, ${member.theme.secondary}, transparent)`,
+        ...getChromeClipStyle(align, 10),
+        background: `linear-gradient(180deg, ${surface} 0%, rgba(5,7,5,0.92) 100%)`,
+        boxShadow: `inset 0 0 0 1px ${accent}24`,
       }}
-    />
-  );
-}
-
-function IconBadge({
-  member,
-  icon: Icon,
-}: {
-  member: TeamMember;
-  icon: LucideIcon;
-}) {
-  return (
-    <div
-      className="rounded-full border border-white/10 bg-black/28 p-3"
-      style={{ boxShadow: `0 0 24px ${member.theme.glow}` }}
     >
-      <Icon className="h-5 w-5" style={{ color: member.theme.secondary }} />
+      <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-slate-500">
+        {code}
+      </span>
+      <span
+        aria-hidden
+        className="h-px w-full"
+        style={{
+          background: `linear-gradient(90deg, ${accent} 0%, ${secondary} 100%)`,
+        }}
+      />
     </div>
   );
 }
 
-function PanelChip({
+function PanelBadge({
   label,
   accent,
   fill,
+  align,
 }: {
   label: string;
   accent: string;
   fill: string;
+  align: EdgeAlign;
 }) {
   return (
     <span
-      className="rounded-full border px-4 py-2 text-[0.68rem] uppercase tracking-[0.28em]"
+      className="inline-flex max-w-[16rem] items-center overflow-hidden border px-3 py-1.5 text-[0.56rem] uppercase tracking-[0.18em] text-ellipsis whitespace-nowrap"
       style={{
+        ...getChromeClipStyle(align, 10),
         borderColor: fill,
-        background: fill,
+        background: `linear-gradient(180deg, ${fill} 0%, rgba(5,7,5,0.84) 100%)`,
         color: accent,
       }}
     >
@@ -694,82 +467,105 @@ function PanelChip({
   );
 }
 
-function QuickInfoCard({
+function DetailCard({
   label,
-  value,
+  title,
+  detail,
   accent,
+  align,
 }: {
   label: string;
-  value: string;
+  title: string;
+  detail: string;
   accent: string;
+  align: EdgeAlign;
 }) {
   return (
     <div
-      className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4"
+      className={`border px-3 py-3 sm:px-4 sm:py-3.5 ${
+        align === "left" ? "text-left" : "text-right"
+      }`}
       style={{
-        background: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)), radial-gradient(circle at top right, ${accent}1f, transparent 52%)`,
-        boxShadow: `inset 0 0 0 1px ${accent}18`,
+        ...getChromeClipStyle(align, 14),
+        background:
+          align === "left"
+            ? `linear-gradient(135deg, ${accent}12 0%, rgba(6,8,6,0.9) 100%)`
+            : `linear-gradient(225deg, ${accent}12 0%, rgba(6,8,6,0.9) 100%)`,
+        borderColor: `${accent}22`,
+        boxShadow: `inset 0 0 0 1px ${accent}14`,
       }}
     >
-      <p className="text-[0.66rem] uppercase tracking-[0.3em] text-white/42">
+      <p className="text-[0.52rem] uppercase tracking-[0.18em] text-slate-500">
         {label}
       </p>
-      <p className="mt-3 text-sm uppercase tracking-[0.18em]" style={{ color: accent }}>
-        {value}
+      <h3 className="mt-2 text-[0.92rem] leading-5 font-semibold text-white">
+        {title}
+      </h3>
+      <p className="mt-2 text-[0.76rem] leading-6 text-slate-300">
+        {detail}
       </p>
     </div>
   );
 }
 
-function MiniStatCard({
-  label,
-  value,
-  accent,
+function ProfileEssentialsCard({
+  member,
+  align,
 }: {
-  label: string;
-  value: string;
-  accent: string;
+  member: TeamMember;
+  align: EdgeAlign;
 }) {
   return (
     <div
-      className="rounded-[20px] border border-white/10 bg-white/[0.03] p-3"
+      className={`border px-3 py-3 sm:px-4 sm:py-3.5 ${
+        align === "left" ? "text-left" : "text-right"
+      }`}
       style={{
-        background: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)), radial-gradient(circle at top right, ${accent}18, transparent 54%)`,
-        boxShadow: `inset 0 0 0 1px ${accent}16`,
+        ...getChromeClipStyle(align, 14),
+        background:
+          align === "left"
+            ? `linear-gradient(135deg, ${member.theme.accentSoft} 0%, rgba(6,8,6,0.92) 100%)`
+            : `linear-gradient(225deg, ${member.theme.accentSoft} 0%, rgba(6,8,6,0.92) 100%)`,
+        borderColor: member.theme.line,
+        boxShadow: `inset 0 0 0 1px ${member.theme.accentSoft}`,
       }}
     >
-      <p className="text-[0.6rem] uppercase tracking-[0.28em] text-white/44">
-        {label}
-      </p>
-      <p className="mt-2 text-[0.72rem] uppercase tracking-[0.2em]" style={{ color: accent }}>
-        {value}
-      </p>
+      <div className="grid gap-3 sm:grid-cols-2 sm:gap-0">
+        <InfoBlock
+          className="border-b border-white/8 pb-3 sm:border-b-0 sm:border-r sm:border-white/8 sm:pb-0 sm:pr-4"
+          label="Rol"
+          value={member.role}
+          accent={member.theme.secondary}
+        />
+        <InfoBlock
+          className="pt-0 sm:pl-4"
+          label="Especializacion"
+          value={member.title}
+          accent={member.theme.accent}
+        />
+      </div>
     </div>
   );
 }
 
-function StatSummary({
+function InfoBlock({
+  className,
   label,
   value,
   accent,
 }: {
+  className?: string;
   label: string;
   value: string;
   accent: string;
 }) {
   return (
-    <div
-      className="rounded-[22px] border border-white/10 bg-white/[0.04] p-4"
-      style={{
-        background: `linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)), radial-gradient(circle at top right, ${accent}18, transparent 56%)`,
-        boxShadow: `inset 0 0 0 1px ${accent}16`,
-      }}
-    >
-      <p className="text-[0.66rem] uppercase tracking-[0.3em] text-white/42">
+    <div className={`min-w-0 ${className ?? ""}`}>
+      <p className="text-[0.52rem] uppercase tracking-[0.18em] text-slate-500">
         {label}
       </p>
       <p
-        className="mt-3 line-clamp-2 text-sm font-semibold uppercase tracking-[0.16em]"
+        className="mt-2 text-[0.82rem] leading-6 text-slate-200"
         style={{ color: accent }}
       >
         {value}
@@ -778,115 +574,110 @@ function StatSummary({
   );
 }
 
-function StatBar({
-  stat,
-  index,
-  member,
-}: {
-  stat: TeamStat;
-  index: number;
-  member: TeamMember;
-}) {
-  return (
-    <div className="rounded-[24px] border border-white/10 bg-white/[0.03] px-4 py-3">
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-sm uppercase tracking-[0.16em] text-slate-300/76">
-          {stat.label}
-        </p>
-        <p className="text-sm font-semibold text-white/86">{stat.value}</p>
-      </div>
-
-      <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/8">
-        <motion.div
-          key={`${member.id}-${stat.label}`}
-          initial={{ width: 0 }}
-          animate={{ width: `${stat.value}%` }}
-          transition={{
-            duration: 0.6,
-            ease: [0.22, 1, 0.36, 1],
-            delay: index * 0.05,
-          }}
-          className="h-full rounded-full"
-          style={{
-            background: `linear-gradient(90deg, ${member.theme.accent} 0%, ${member.theme.secondary} 100%)`,
-            boxShadow: `0 0 18px ${member.theme.glow}`,
-          }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function DetailList({
-  title,
-  items,
-  accent,
-}: {
-  title: string;
-  items: string[];
-  accent: string;
-}) {
-  return (
-    <div
-      className="rounded-[28px] border border-white/10 bg-white/[0.03] p-5"
-      style={{
-        background: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)), radial-gradient(circle at top right, ${accent}16, transparent 52%)`,
-        boxShadow: `inset 0 0 0 1px ${accent}14`,
-      }}
-    >
-      <p className="section-eyebrow">{title}</p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {items.map((item) => (
-          <span
-            key={item}
-            className="rounded-full border border-white/10 bg-black/24 px-3 py-2 text-[0.68rem] uppercase tracking-[0.24em]"
-            style={{ color: accent }}
-          >
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ContactButton({
+function ProfileLink({
   icon,
   label,
   value,
   href,
   accent,
+  align,
 }: {
   icon: ReactNode;
   label: string;
   value: string;
   href: string;
   accent: string;
+  align: EdgeAlign;
 }) {
   return (
     <a
       href={href}
       target={href.startsWith("http") ? "_blank" : undefined}
       rel={href.startsWith("http") ? "noreferrer noopener" : undefined}
-      className="flex items-center gap-4 rounded-[24px] border border-white/10 bg-white/[0.04] px-4 py-4 transition-transform duration-300 hover:-translate-y-0.5"
+      onClick={(event) => event.stopPropagation()}
+      className={`flex min-w-0 items-center gap-3 border px-3 py-2.5 transition-colors duration-150 hover:bg-white/[0.03] ${
+        align === "left" ? "text-left" : "flex-row-reverse text-right"
+      }`}
       style={{
-        background: `linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)), radial-gradient(circle at top right, ${accent}16, transparent 54%)`,
+        ...getChromeClipStyle(align, 12),
+        background:
+          align === "left"
+            ? `linear-gradient(135deg, ${accent}10 0%, rgba(6,8,6,0.88) 100%)`
+            : `linear-gradient(225deg, ${accent}10 0%, rgba(6,8,6,0.88) 100%)`,
+        borderColor: `${accent}20`,
         boxShadow: `inset 0 0 0 1px ${accent}14`,
       }}
     >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-black/28">
-        <span style={{ color: accent }}>{icon}</span>
+      <div
+        className="flex h-9 w-9 shrink-0 items-center justify-center border border-white/10 bg-transparent"
+        style={getInlineChipStyle(accent, align)}
+      >
+        {icon}
       </div>
-      <div className="min-w-0">
-        <p className="text-[0.66rem] uppercase tracking-[0.3em] text-white/42">
+
+      <div className="min-w-0 flex-1">
+        <p className="text-[0.52rem] uppercase tracking-[0.18em] text-slate-500">
           {label}
         </p>
-        <p className="mt-2 truncate text-sm text-slate-200/86">{value}</p>
+        <p className="mt-1 truncate text-[0.76rem] leading-5 text-slate-200">
+          {value}
+        </p>
       </div>
     </a>
   );
 }
 
-function getLeadStat(stats: TeamStat[]) {
-  return stats.reduce((best, current) => (current.value > best.value ? current : best));
+function getPanelStyle(
+  member: TeamMember,
+  isLeft: boolean,
+  isActive: boolean,
+  isSelected: boolean,
+): CSSProperties {
+  return {
+    background: isLeft
+      ? `linear-gradient(90deg, ${member.theme.surface} 0%, ${member.theme.surfaceAlt} 46%, #050705 100%)`
+      : `linear-gradient(270deg, ${member.theme.surface} 0%, ${member.theme.surfaceAlt} 46%, #050705 100%)`,
+    boxShadow: isActive
+      ? `inset 0 0 0 1px ${member.theme.line}, inset 0 0 0 2px rgba(255,255,255,0.03)`
+      : isSelected
+        ? `inset 0 0 0 1px ${member.theme.secondarySoft}, inset 0 0 0 2px rgba(255,255,255,0.02)`
+        : "inset 0 0 0 1px rgba(255,255,255,0.08)",
+    clipPath: getPanelClip(isLeft),
+  };
+}
+
+function getIconFrameStyle(member: TeamMember, align: EdgeAlign): CSSProperties {
+  return {
+    ...getChromeClipStyle(align, 10),
+    background: `linear-gradient(180deg, ${member.theme.surfaceAlt} 0%, rgba(5,7,5,0.92) 100%)`,
+    color: member.theme.accent,
+    boxShadow: `inset 0 0 0 1px ${member.theme.accentSoft}`,
+  };
+}
+
+function getInlineChipStyle(accent: string, align: EdgeAlign): CSSProperties {
+  return {
+    ...getChromeClipStyle(align, 8),
+    background: "linear-gradient(180deg, rgba(18,22,18,0.94) 0%, rgba(6,8,6,0.92) 100%)",
+    color: accent,
+    boxShadow: `inset 0 0 0 1px ${accent}16`,
+  };
+}
+
+function getPanelClip(isLeft: boolean) {
+  return isLeft
+    ? "polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%)"
+    : "polygon(26px 0, 100% 0, 100% 100%, 0 100%, 0 26px)";
+}
+
+function getChromeClipStyle(
+  align: EdgeAlign,
+  inset: number,
+): Pick<CSSProperties, "clipPath"> {
+  return {
+    clipPath:
+      align === "left"
+        ? `polygon(0 0, calc(100% - ${inset}px) 0, 100% ${inset}px, 100% 100%, 0 100%)`
+        : `polygon(${inset}px 0, 100% 0, 100% 100%, 0 100%, 0 ${inset}px)`,
+  };
 }

@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s | Pactum X Team",
   },
   description:
-    "Presentacion interactiva del equipo de Pactum X con una puesta en escena inspirada en pantallas de seleccion de personajes.",
+    "Presentacion vertical y refinada del equipo de Pactum X con una interfaz oscura, limpia y optimizada para movil.",
   applicationName: "Pactum X Team",
   keywords: [
     "Pactum X",
@@ -42,7 +42,7 @@ export default function RootLayout({
       lang="es"
       className={`${displayFont.variable} ${interfaceFont.variable} h-full`}
     >
-      <body className="flex min-h-full flex-col bg-[#05060b] font-sans text-slate-100 antialiased">
+      <body className="flex min-h-full flex-col bg-[#050705] font-sans text-slate-100 antialiased">
         {children}
       </body>
     </html>

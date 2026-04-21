@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #05060b;
-  --foreground: #f8fafc;
+  --background: #050705;
+  --foreground: #e6edf7;
 }
 
 @theme inline {
@@ -22,45 +22,18 @@ html {
 
 body {
   min-height: 100vh;
+  margin: 0;
   background:
-    radial-gradient(circle at 12% 10%, rgba(139, 92, 246, 0.14) 0%, transparent 24%),
-    radial-gradient(circle at 84% 12%, rgba(34, 211, 238, 0.1) 0%, transparent 20%),
-    radial-gradient(circle at 48% 100%, rgba(239, 68, 68, 0.08) 0%, transparent 28%),
-    linear-gradient(180deg, #04050a 0%, #090b13 46%, #05060b 100%);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0, rgba(255, 255, 255, 0.035) 1px, transparent 1px, transparent calc(100% - 1px), rgba(255, 255, 255, 0.035) calc(100% - 1px), rgba(255, 255, 255, 0.035) 100%),
+    radial-gradient(circle at 16% 9%, rgba(116, 103, 120, 0.14) 0%, transparent 17%),
+    radial-gradient(circle at 84% 11%, rgba(82, 104, 95, 0.1) 0%, transparent 15%),
+    linear-gradient(180deg, #050705 0%, #090c0a 46%, #040604 100%);
   color: var(--foreground);
   font-family: var(--font-interface), sans-serif;
 }
 
 .font-display {
   font-family: var(--font-display), serif;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 120px 120px;
-  mask-image: radial-gradient(circle at center, black 0%, black 54%, transparent 100%);
-  opacity: 0.16;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(4, 5, 10, 0.18) 0%,
-      rgba(4, 5, 10, 0.06) 24%,
-      rgba(4, 5, 10, 0.68) 100%
-    ),
-    radial-gradient(circle at center, transparent 44%, rgba(4, 5, 10, 0.62) 100%);
 }
 
 a {
@@ -73,179 +46,8 @@ button {
 }
 
 ::selection {
-  background: rgba(168, 85, 247, 0.34);
+  background: rgba(122, 104, 127, 0.32);
   color: #ffffff;
-}
-
-.section-eyebrow {
-  font-size: 0.72rem;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: rgba(226, 232, 240, 0.56);
-}
-
-.glass-panel {
-  position: relative;
-  overflow: hidden;
-  border-radius: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(10, 12, 20, 0.9), rgba(6, 8, 15, 0.72));
-  box-shadow:
-    0 24px 90px rgba(0, 0, 0, 0.58),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(24px);
-}
-
-.glass-panel::before {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  pointer-events: none;
-}
-
-.glass-panel::after {
-  content: "";
-  position: absolute;
-  inset: -32% 18% auto;
-  height: 160px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent 72%);
-  opacity: 0.32;
-  pointer-events: none;
-}
-
-.pactum-panel {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background:
-    linear-gradient(180deg, rgba(13, 16, 26, 0.96), rgba(7, 9, 15, 0.9)),
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.05), transparent 40%);
-  box-shadow:
-    0 22px 80px rgba(0, 0, 0, 0.52),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(24px);
-}
-
-.pactum-panel::before {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  pointer-events: none;
-}
-
-.pactum-panel::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.04) 22%, transparent 42%),
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.04), transparent 28%);
-  pointer-events: none;
-}
-
-.roster-scroll {
-  scrollbar-width: none;
-}
-
-.roster-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.ambient-grid {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 110px 110px;
-  mask-image: radial-gradient(circle at center, black 0%, black 38%, transparent 92%);
-}
-
-.ambient-noise {
-  background-image:
-    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.1) 0, transparent 20%),
-    radial-gradient(circle at 84% 10%, rgba(255, 255, 255, 0.08) 0, transparent 18%),
-    radial-gradient(circle at 54% 82%, rgba(255, 255, 255, 0.07) 0, transparent 28%);
-  mix-blend-mode: screen;
-}
-
-.fog-cloud {
-  filter: blur(70px);
-  animation: drift 18s ease-in-out infinite;
-}
-
-.rune-ring {
-  animation: slow-spin 24s linear infinite;
-}
-
-.rune-ring-reverse {
-  animation: slow-spin-reverse 34s linear infinite;
-}
-
-.energy-sheen {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    118deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.08) 45%,
-    transparent 60%
-  );
-  transform: translateX(-120%);
-  animation: sweep 8s ease-in-out infinite;
-}
-
-@keyframes drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate3d(4%, -6%, 0) scale(1.08);
-  }
-}
-
-@keyframes slow-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes slow-spin-reverse {
-  from {
-    transform: rotate(360deg);
-  }
-
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-@keyframes sweep {
-  0%,
-  24% {
-    transform: translateX(-120%);
-    opacity: 0;
-  }
-
-  32%,
-  58% {
-    transform: translateX(120%);
-    opacity: 0.7;
-  }
-
-  100% {
-    transform: translateX(120%);
-    opacity: 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

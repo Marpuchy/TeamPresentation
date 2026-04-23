@@ -130,6 +130,33 @@ export function TeamShowcase({ members }: TeamShowcaseProps) {
       <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-px bg-white/10" />
 
       <div className="relative z-10">
+        <header className="flex flex-col items-center gap-4 px-6 py-14 sm:py-20 text-center">
+          <a
+            href="https://pactumx.itch.io/"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="group inline-flex flex-col items-center gap-3"
+          >
+            <span className="text-[0.58rem] uppercase tracking-[0.28em] text-slate-500">
+              Ya disponible en
+            </span>
+            <span className="font-display text-[clamp(1.6rem,5vw,3.8rem)] leading-[0.9] tracking-[0.05em] text-white transition-colors duration-200 group-hover:text-[#c8f04e]">
+              Descarga nuestro juego aquí&nbsp;→
+            </span>
+            <span
+              aria-hidden
+              className="h-px w-24 bg-gradient-to-r from-transparent via-[#c8f04e66] to-transparent transition-all duration-300 group-hover:w-48 group-hover:via-[#c8f04e]"
+            />
+          </a>
+
+          <div className="mt-8 flex flex-col items-center gap-2">
+            <p className="text-[clamp(1rem,2.5vw,1.6rem)] font-semibold uppercase tracking-[0.18em] text-slate-300">
+              Nuestros Perfiles
+            </p>
+            <span className="text-[1.4rem] leading-none text-slate-500">↓</span>
+          </div>
+        </header>
+
         <div
           role="list"
           aria-label="Roster vertical del equipo Pactum X"

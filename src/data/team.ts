@@ -33,7 +33,7 @@ export const teamMembers: TeamMember[] = [
     title: "Forjador del Nucleo",
     description:
       "Técnico Superior en DAM y desarrollador de videojuegos con foco en backend y sistemas jugables. Construye la infraestructura que sostiene la experiencia: arquitectura limpia, pipelines CI/CD y lógica de juego preparada para escalar.",
-    signatureAbility: "Sello de Integracion",
+    signatureAbility: "Sello  de Integracion",
     signatureDetail:
       "Convierte conceptos complejos en sistemas robustos con foco en rendimiento, estabilidad y velocidad de iteración. De la arquitectura al gameplay loop, sin que nada se rompa en producción.",
     github: "CesarTraver",

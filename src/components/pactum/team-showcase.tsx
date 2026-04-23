@@ -132,7 +132,7 @@ export function TeamShowcase({ members }: TeamShowcaseProps) {
       <div className="relative z-10">
         <header className="flex flex-col items-center gap-4 px-6 py-14 sm:py-20 text-center">
           <a
-            href="https://pactumx.itch.io/"
+            href="https://chinwenwencha.itch.io/pactum-x"
             target="_blank"
             rel="noreferrer noopener"
             className="group inline-flex flex-col items-center gap-3"

@@ -140,8 +140,11 @@ export function TeamShowcase({ members }: TeamShowcaseProps) {
             <span className="text-[0.58rem] uppercase tracking-[0.28em] text-slate-500">
               Ya disponible en
             </span>
-            <span className="font-display text-[clamp(1.6rem,5vw,3.8rem)] leading-[0.9] tracking-[0.05em] text-white transition-colors duration-200 group-hover:text-[#c8f04e]">
-              Descarga nuestro juego aquí&nbsp;→
+            <span className="font-display text-[clamp(1.6rem,5vw,3.8rem)] leading-[0.9] tracking-[0.05em] text-white">
+              Descarga nuestro juego{" "}
+              <span className="text-[#c8f04e] underline underline-offset-4 decoration-[#c8f04e66] transition-colors duration-200 group-hover:decoration-[#c8f04e]">
+                aquí
+              </span>
             </span>
             <span
               aria-hidden

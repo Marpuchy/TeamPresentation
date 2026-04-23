@@ -2,34 +2,9 @@ import type { TeamMember } from "@/types/team";
 
 export const teamMembers: TeamMember[] = [
   {
-    id: "marc",
-    name: "Marc",
-    role: "Direccion creativa y sistemas",
-    title: "Arquitecto del Juramento",
-    description:
-      "Transforma ideas sueltas en sistemas con identidad propia. Ordena el mapa de decisiones, fija el tono de Pactum X y cuida que cada mecanica responda a una vision comun.",
-    signatureAbility: "Concilio de Reglas",
-    signatureDetail:
-      "Construye el marco que conecta fantasia, reglas y produccion para que el nucleo del juego se sienta compacto, legible y con personalidad.",
-    github: "Marpuchy",
-    email: "marc@pactumx.dev",
-    theme: {
-      accent: "#7a687f",
-      accentSoft: "rgba(122, 104, 127, 0.15)",
-      secondary: "#757b90",
-      secondarySoft: "rgba(117, 123, 144, 0.14)",
-      surface: "#141216",
-      surfaceAlt: "#0d0c10",
-      line: "rgba(122, 104, 127, 0.3)",
-    },
-    avatar: {
-      variant: "crown",
-    },
-  },
-  {
     id: "cesar",
     name: "César",
-    role: "Programador backend  & GameDev",
+    role: "Programador backend & GameDev",
     title: "Forjador del Nucleo",
     description:
       "Técnico Superior en DAM y desarrollador de videojuegos con foco en backend y sistemas jugables. Construye la infraestructura que sostiene la experiencia: arquitectura limpia, pipelines CI/CD y lógica de juego preparada para escalar.",
@@ -54,15 +29,15 @@ export const teamMembers: TeamMember[] = [
   {
     id: "andreu",
     name: "Andreu",
-    role: "Diseno de combate y balance",
+    role: "UI/UX & Frontend",
     title: "Maestro del Encuentro",
     description:
-      "Moldea los combates para que cada encuentro tenga una curva clara de tension, respuesta y recompensa. Su trabajo hace que las decisiones del jugador se sientan afiladas.",
-    signatureAbility: "Rito de Presion",
+      "Técnico Superior en Animación 3D y Entornos Interactivos y en DAW con foco en frontend y diseño visual. Construye la capa que el jugador toca: interfaces que comunican, experiencias que guían y estética que refuerza la identidad del juego.",
+    signatureAbility: "Rito de Presión",
     signatureDetail:
-      "Orquesta enfrentamientos que ensenan sin frenar, castigan sin romper el ritmo y mantienen la presion donde el juego mas lo necesita.",
-    github: "andreu-pactumx",
-    email: "andreu@pactumx.dev",
+      "Moldea cada píxel y cada flujo de pantalla para que el jugador entienda sin leer, actúe sin dudar y sienta que el juego habla su idioma.",
+    github: "AndreuRH",
+    email: "andreu.ramos02@gmail.com",
     theme: {
       accent: "#5d7b78",
       accentSoft: "rgba(93, 123, 120, 0.15)",
@@ -74,6 +49,31 @@ export const teamMembers: TeamMember[] = [
     },
     avatar: {
       variant: "blade",
+    },
+  },
+  {
+    id: "marc",
+    name: "Marc",
+    role: "Direccion creativa y sistemas",
+    title: "Arquitecto del Juramento",
+    description:
+      "Transforma ideas sueltas en sistemas con identidad propia. Ordena el mapa de decisiones, fija el tono de Pactum X y cuida que cada mecanica responda a una vision comun.",
+    signatureAbility: "Concilio de Reglas",
+    signatureDetail:
+      "Construye el marco que conecta fantasia, reglas y produccion para que el nucleo del juego se sienta compacto, legible y con personalidad.",
+    github: "Marpuchy",
+    email: "marc@pactumx.dev",
+    theme: {
+      accent: "#7a687f",
+      accentSoft: "rgba(122, 104, 127, 0.15)",
+      secondary: "#757b90",
+      secondarySoft: "rgba(117, 123, 144, 0.14)",
+      surface: "#141216",
+      surfaceAlt: "#0d0c10",
+      line: "rgba(122, 104, 127, 0.3)",
+    },
+    avatar: {
+      variant: "crown",
     },
   },
   {

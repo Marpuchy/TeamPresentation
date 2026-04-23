@@ -28,16 +28,16 @@ export const teamMembers: TeamMember[] = [
   },
   {
     id: "cesar",
-    name: "Cesar",
-    role: "Programacion jugable y tecnica",
+    name: "César",
+    role: "Programador backend  & GameDev",
     title: "Forjador del Nucleo",
     description:
-      "Lleva las ideas de papel al juego con una implementacion que aguanta iteracion real. Une herramientas, logica y rendimiento para que la vision no se rompa al ejecutarse.",
+      "Técnico Superior en DAM y desarrollador de videojuegos con foco en backend y sistemas jugables. Construye la infraestructura que sostiene la experiencia: arquitectura limpia, pipelines CI/CD y lógica de juego preparada para escalar.",
     signatureAbility: "Sello de Integracion",
     signatureDetail:
-      "Convierte conceptos complejos en sistemas robustos con foco en rendimiento, estabilidad y velocidad de iteracion para todo el equipo.",
-    github: "cesar-pactumx",
-    email: "cesar@pactumx.dev",
+      "Convierte conceptos complejos en sistemas robustos con foco en rendimiento, estabilidad y velocidad de iteración. De la arquitectura al gameplay loop, sin que nada se rompa en producción.",
+    github: "CesarTraver",
+    email: "cesartraver@gmail.com",
     theme: {
       accent: "#a16a4d",
       accentSoft: "rgba(161, 106, 77, 0.15)",

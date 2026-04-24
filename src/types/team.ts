@@ -24,6 +24,7 @@ export type TeamMember = {
   signatureDetail: string;
   github: string;
   email: string;
+  linkedin?: string;
   theme: TeamTheme;
   avatar: TeamAvatar;
 };

@@ -3,7 +3,7 @@ import type { TeamMember } from "@/types/team";
 export const teamMembers: TeamMember[] = [
   {
     id: "cesar",
-    name: "César",
+    name: "César Traver Bolos",
     role: "Programador backend & GameDev",
     title: "Forjador del Nucleo",
     description:
@@ -13,6 +13,7 @@ export const teamMembers: TeamMember[] = [
       "Convierte conceptos complejos en sistemas robustos con foco en rendimiento, estabilidad y velocidad de iteración. De la arquitectura al gameplay loop, sin que nada se rompa en producción.",
     github: "CesarTraver",
     email: "cesartraver@gmail.com",
+    linkedin: "césar-traver-bolos-ba7331364",
     theme: {
       accent: "#a16a4d",
       accentSoft: "rgba(161, 106, 77, 0.15)",

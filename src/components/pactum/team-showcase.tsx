@@ -13,6 +13,7 @@ import {
   Code2,
   Crown,
   Eye,
+  Linkedin,
   Mail,
   Sword,
   type LucideIcon,
@@ -386,6 +387,16 @@ export function TeamShowcase({ members }: TeamShowcaseProps) {
                                     accent={member.theme.secondary}
                                     align={align}
                                   />
+                                  {member.linkedin && (
+                                    <ProfileLink
+                                      icon={<Linkedin className="h-4 w-4" />}
+                                      label="LinkedIn"
+                                      value={member.linkedin}
+                                      href={`https://www.linkedin.com/in/${member.linkedin}`}
+                                      accent={member.theme.accent}
+                                      align={align}
+                                    />
+                                  )}
                                 </div>
                               </div>
                             </>
@@ -410,6 +421,16 @@ export function TeamShowcase({ members }: TeamShowcaseProps) {
                                     accent={member.theme.secondary}
                                     align={align}
                                   />
+                                  {member.linkedin && (
+                                    <ProfileLink
+                                      icon={<Linkedin className="h-4 w-4" />}
+                                      label="LinkedIn"
+                                      value={member.linkedin}
+                                      href={`https://www.linkedin.com/in/${member.linkedin}`}
+                                      accent={member.theme.accent}
+                                      align={align}
+                                    />
+                                  )}
                                 </div>
                               </div>
                               <DetailCard

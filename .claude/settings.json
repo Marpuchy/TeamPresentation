@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s 'https://api.vercel.com/v9/projects?teamId=team_VjqU8iCzmrGXvyTn8ldyeX6I' -H 'Authorization: Bearer __TRACKED_VAR__')",
+      "Bash(curl -s 'https://api.vercel.com/v6/deployments?teamId=team_VjqU8iCzmrGXvyTn8ldyeX6I&limit=5' -H 'Authorization: Bearer __TRACKED_VAR__')",
+      "Bash(curl -s 'https://api.vercel.com/v6/deployments?limit=5' -H 'Authorization: Bearer __TRACKED_VAR__')",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(dep['uid'], dep.get\\('name',''\\), dep.get\\('state',''\\)\\) for dep in d.get\\('deployments',[]\\)]\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d.get\\('name',''\\)\\)\")",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(node --input-type=module --eval \"import * as l from './node_modules/lucide-react/dist/esm/lucide-react.js'; console.log\\(Object.keys\\(l\\).filter\\(k => k.toLowerCase\\(\\).includes\\('link'\\) || k.toLowerCase\\(\\).includes\\('linked'\\)\\).join\\('\\\\n'\\)\\)\")"
+    ]
+  }
+}

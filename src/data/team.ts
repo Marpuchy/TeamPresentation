@@ -55,7 +55,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: "marc",
     name: "Marc",
-    role: "Direccion creativa y sistemas",
+    role: "Direccion creativa  y sistemas",
     title: "Arquitecto  del Juramento",
     description:
       "Transforma ideas sueltas en sistemas con identidad propia. Ordena el mapa de decisiones, fija el tono de Pactum X y cuida que cada mecanica responda a una vision comun.",
